@@ -43,7 +43,7 @@ public class Orbit : MonoBehaviour
                 LocalRotation.x -= Input.GetAxis("Mouse Y") * MouseSensitivity;
 
                 //Clamp y rotation
-                LocalRotation.x = Mathf.Clamp(LocalRotation.x, 0, 90);
+                //LocalRotation.x = Mathf.Clamp(LocalRotation.x, 0, 90);
             }
         }
             //Zoom based on scroll wheel
