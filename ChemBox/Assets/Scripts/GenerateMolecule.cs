@@ -1,10 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 
 struct atom
 {
     public int connected;
+    public int rotateHead;
+    public int rotateLeft;
 }
 
 struct molecule
@@ -29,7 +34,7 @@ struct DFSstep
 public class GenerateMolecule : MonoBehaviour
 {
     public Transform parent;
-    public GameObject sphere;
+    public GameObject atomObj;
     public GameObject dummy;
     public GameObject SingleBond;
     public GameObject DoubleBond;
@@ -84,7 +89,7 @@ public class GenerateMolecule : MonoBehaviour
         DFSstep start = new DFSstep();
         Stack<DFSstep> stk = new Stack<DFSstep>();
         UnityEngine.Vector3 vect = new UnityEngine.Vector3(0, 0, 0);
-        mol.selectorArr[0] = Instantiate(sphere, vect, roto(0, 0, 0), parent);
+        mol.selectorArr[0] = Instantiate(atomObj, vect, roto(0, 0, 0), parent);
         mol.selectorArr[0].name = (mol.smiles[0]).ToString();
         start.vect = vect;
         start.i = 1;
@@ -196,11 +201,11 @@ public class GenerateMolecule : MonoBehaviour
                             start.vect += new UnityEngine.Vector3(1.5f / 2f, 0, 0);
                             if (start.GameObjectLoc == 0)
                             {
-                                mol.selectorArr[start.i * 2] = Instantiate(sphere, start.vect, roto(0, 0, 0), parent);
+                                mol.selectorArr[start.i * 2] = Instantiate(atomObj, start.vect, roto(0, 0, 0), parent);
                             }
                             else
                             {
-                                mol.selectorArr[start.i * 2] = Instantiate(sphere, start.vect, roto(0, 0, 0), mol.selectorArr[start.GameObjectLoc * 2].transform);
+                                mol.selectorArr[start.i * 2] = Instantiate(atomObj, start.vect, roto(0, 0, 0), mol.selectorArr[start.GameObjectLoc * 2].transform);
                             }
                             mol.selectorArr[start.i * 2].name = namea;
                             mol.size++;
@@ -214,7 +219,8 @@ public class GenerateMolecule : MonoBehaviour
                         {
                             DFSstep step2 = start;
                             step2.GameObjectLoc = start.lastObj;
-                            mol.atoms[(start.i - 1) * 2].connected++;
+                            mol.atoms[step2.GameObjectLoc * 2].rotateHead++;
+                            mol.atoms[(start.i - 1) * 2].connected = step2.GameObjectLoc;
                             mol.selectorArr[start.i * 2] = Instantiate(dummy, start.vect, roto(0, 0, 0), mol.selectorArr[step2.GameObjectLoc * 2].transform);
                             mol.selectorArr[start.i * 2].name = "dummy";
                             mol.rotate.Add(start.i);
@@ -245,9 +251,30 @@ public class GenerateMolecule : MonoBehaviour
                 }
             }
         }
+        // Rotate subgroups off eachother (TODO: could be made to look nicer)
         foreach (int i in mol.rotate)
         {
-            mol.selectorArr[i * 2].transform.rotation = roto(((mol.atoms[(i - 1) * 2].connected)) / 2f, ((mol.atoms[(i - 1) * 2].connected)--) / -2f, 0);
+            float leftToRotate = ++mol.atoms[mol.atoms[(i - 1) * 2].connected * 2].rotateLeft;
+            float rotateHead = (mol.atoms[mol.atoms[(i - 1) * 2].connected * 2].rotateHead);
+            float spin = (leftToRotate) / (rotateHead + 1);
+            mol.selectorArr[i * 2].transform.rotation = roto(-((spin * 3f) - 1f), -((spin * 4f) - 1f), ((spin * 2f) - 1f));
+        }
+
+        // Color each atom based off name
+        foreach (GameObject i in mol.selectorArr)
+        {
+            if (i != null && i.name != "dummy" && i.name != "Single Bond" && i.name != "Double Bond" && i.name != "Triple Bond")
+            {
+                // Hash name of atom and then use as color values
+                var render = i.GetComponent<Renderer>();
+                byte[] encoded = SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(i.name));
+                var value = System.BitConverter.ToUInt32(encoded, 0);
+                float b = value % 100 / 100f;
+                float g = value % 1000000000 / 1000000000f;
+                float r = value % 1000000 / 1000000f;
+                Color autogenColor = new Color(r,g,b, 1f);
+                render.material.color = autogenColor;
+            }
         }
     }
 }
