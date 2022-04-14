@@ -20,6 +20,7 @@ struct molecule
 struct DFSstep
 {
     public int GameObjectLoc;
+    public int lastObj;
     public int i, startpar, endpara;
     public UnityEngine.Vector3 vect;
 }
@@ -30,8 +31,11 @@ public class GenerateMolecule : MonoBehaviour
     public Transform parent;
     public GameObject sphere;
     public GameObject dummy;
-    public GameObject bond;
+    public GameObject SingleBond;
+    public GameObject DoubleBond;
+    public GameObject TripleBond;
     public OpsinInteract opsin;
+    public bool bonds;
     private molecule mol;
     public string molname;
     // Start is called before the first frame update
@@ -85,7 +89,8 @@ public class GenerateMolecule : MonoBehaviour
         start.vect = vect;
         start.i = 1;
         start.startpar = 0;
-        start.GameObjectLoc = -1;
+        start.GameObjectLoc = 0;
+        start.lastObj = 0;
         stk.Push(start);
         while (stk.Count != 0)
         {
@@ -98,10 +103,98 @@ public class GenerateMolecule : MonoBehaviour
                 {
                     if (mol.smiles[start.i] != '(' && mol.smiles[start.i] != ')')
                     {
-                        if (mol.smiles[start.i] != '=' && mol.smiles[start.i] != '#') //ignore for now
+                        if (mol.smiles[start.i] != '=' && mol.smiles[start.i] != '#' && char.IsLetter(mol.smiles[start.i])) //ignore for now
                         {
+                            string namea = (mol.smiles[start.i]).ToString();
+                            string bondname = "Single Bond";
+                            if (start.i != 0) // check behind to see if bracket or bond type (ugly but identical big O)
+                            {
+                                if (mol.smiles[start.i - 1] == '[')
+                                {
+                                    if (start.i > 1) // check behind to see if bracket or bond type (ugly but identical big O)
+                                    {
+                                        if (mol.smiles[start.i - 2] == '=')
+                                        {
+                                            bondname = "Double Bond";
+                                        }
+                                        else if (mol.smiles[start.i - 2] == '#')
+                                        {
+                                            bondname = "Triple Bond";
+                                        }
+                                    }
+                                    for (int j = start.i + 1; j < mol.smiles.Length; j++)
+                                    {
+                                        if (mol.smiles[j] == ']')
+                                        {
+                                            break;
+                                        }
+                                        namea += (mol.smiles[j]).ToString();
+                                        start.i++;
+                                    }
+                                }
+                                else if (mol.smiles[start.i - 1] == '=')
+                                {
+                                    bondname = "Double Bond";
+                                }
+                                else if (mol.smiles[start.i - 1] == '#')
+                                {
+                                    bondname = "Triple Bond";
+                                }
+                            }
+                            if (namea.Length == 1 && start.i + 1 < mol.smiles.Length) // peak ahead to see if two letter element
+                            {
+                                if (char.IsLetter(mol.smiles[start.i + 1]) && char.IsLower(mol.smiles[start.i + 1]))
+                                {
+                                    namea += (mol.smiles[start.i + 1]).ToString();
+                                    start.i++;
+                                }
+                            }
+
+                            if (bonds)
+                            {
+                                if (start.i != 0) // Bonds
+                                {
+                                    start.vect += new UnityEngine.Vector3(1.5f / 2f, 0, 0);
+                                    if (start.GameObjectLoc == 0)
+                                    {
+                                        if (bondname == "Single Bond")
+                                        {
+                                            mol.selectorArr[start.i * 2 + 1] = Instantiate(SingleBond, start.vect, roto(0, 0, 1), parent);  // TODO: change if = or #
+                                        }
+                                        else if (bondname == "Double Bond")
+                                        {
+                                            mol.selectorArr[start.i * 2 + 1] = Instantiate(DoubleBond, start.vect, roto(0, 0, 1), parent);  // TODO: change if = or #
+
+                                        }
+                                        else if (bondname == "Triple Bond")
+                                        {
+                                            mol.selectorArr[start.i * 2 + 1] = Instantiate(TripleBond, start.vect, roto(0, 0, 1), parent);  // TODO: change if = or #
+
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (bondname == "Single Bond")
+                                        {
+                                            mol.selectorArr[start.i * 2 + 1] = Instantiate(SingleBond, start.vect, roto(0, 0, 1), mol.selectorArr[start.GameObjectLoc * 2].transform); // TODO: change if = or #
+                                        }
+                                        else if (bondname == "Double Bond")
+                                        {
+                                            mol.selectorArr[start.i * 2 + 1] = Instantiate(DoubleBond, start.vect, roto(0, 0, 1), mol.selectorArr[start.GameObjectLoc * 2].transform); // TODO: change if = or #
+
+                                        }
+                                        else if (bondname == "Triple Bond")
+                                        {
+                                            mol.selectorArr[start.i * 2 + 1] = Instantiate(TripleBond, start.vect, roto(0, 0, 1), mol.selectorArr[start.GameObjectLoc * 2].transform); // TODO: change if = or #
+
+                                        }
+                                    }
+                                    mol.selectorArr[start.i * 2 + 1].name = bondname;
+                                }
+                            }
+
                             start.vect += new UnityEngine.Vector3(1.5f / 2f, 0, 0);
-                            if (start.GameObjectLoc == -1)
+                            if (start.GameObjectLoc == 0)
                             {
                                 mol.selectorArr[start.i * 2] = Instantiate(sphere, start.vect, roto(0, 0, 0), parent);
                             }
@@ -109,15 +202,9 @@ public class GenerateMolecule : MonoBehaviour
                             {
                                 mol.selectorArr[start.i * 2] = Instantiate(sphere, start.vect, roto(0, 0, 0), mol.selectorArr[start.GameObjectLoc * 2].transform);
                             }
-                            mol.selectorArr[start.i * 2].name = (mol.smiles[start.i]).ToString();
+                            mol.selectorArr[start.i * 2].name = namea;
                             mol.size++;
-                            // TOOD: Bonds
-                            //start.vect += new UnityEngine.Vector3(1.5f/2f, 0, 0);
-                            /* if (start.i + 1 < mol.smiles.Length)
-                             {
-                                 mol.selectorArr[start.i * 2 +1]=Instantiate(bond, mol.vect, roto(0, 0, 1), parent);
-                                 mol.vect += new UnityEngine.Vector3(1.5f, 0, 0);
-                             }*/
+                            start.lastObj = start.i;
                         }
                         start.i++;
                     }
@@ -126,9 +213,9 @@ public class GenerateMolecule : MonoBehaviour
                         if (mol.smiles[start.i] == '(')
                         {
                             DFSstep step2 = start;
-                            step2.GameObjectLoc = start.i - 1;
+                            step2.GameObjectLoc = start.lastObj;
                             mol.atoms[(start.i - 1) * 2].connected++;
-                            mol.selectorArr[start.i * 2] = Instantiate(dummy, start.vect, roto(0, 0, 0), mol.selectorArr[(start.i - 1) * 2].transform);
+                            mol.selectorArr[start.i * 2] = Instantiate(dummy, start.vect, roto(0, 0, 0), mol.selectorArr[step2.GameObjectLoc * 2].transform);
                             mol.selectorArr[start.i * 2].name = "dummy";
                             mol.rotate.Add(start.i);
                             step2.GameObjectLoc = start.i;
@@ -140,16 +227,15 @@ public class GenerateMolecule : MonoBehaviour
                             {
                                 start.i++;
                                 char c = mol.smiles[j];
-                                if (c == '(')
+                                if (c == '(') // TODO: for other bracket types
                                 {
                                     st.Push(')');
                                 }
-                                else if (c == ')')
+                                else if (c == st.Peek())
                                 {
                                     st.Pop();
                                 }
                                 if (st.Count == 0)
-                                // if (c == ')') // TODO: for other bracket types
                                 {
                                     break;
                                 }
@@ -161,7 +247,7 @@ public class GenerateMolecule : MonoBehaviour
         }
         foreach (int i in mol.rotate)
         {
-            mol.selectorArr[i * 2].transform.rotation = roto(0, (mol.atoms[(i - 1) * 2].connected)--, 0);
+            mol.selectorArr[i * 2].transform.rotation = roto(((mol.atoms[(i - 1) * 2].connected)) / 2f, ((mol.atoms[(i - 1) * 2].connected)--) / -2f, 0);
         }
     }
 }

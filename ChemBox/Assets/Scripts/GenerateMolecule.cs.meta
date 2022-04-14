@@ -3,7 +3,14 @@ guid: 25482cb0a030421438d327d197df1103
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - parent: {instanceID: 0}
+  - sphere: {fileID: 7364276820153522626, guid: ccf7f8733342ccf44b11192f3eee8f8e, type: 3}
+  - dummy: {fileID: 9071060762828834, guid: 2bf1bfe5600da4243abf5a25bd261db2, type: 3}
+  - SingleBond: {fileID: 7833149507352379630, guid: 37b995be4910ebd448298cde1a93ad83, type: 3}
+  - DoubleBond: {instanceID: 0}
+  - TripleBond: {instanceID: 0}
+  - opsin: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
