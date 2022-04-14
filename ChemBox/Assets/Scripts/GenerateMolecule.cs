@@ -251,20 +251,15 @@ public class GenerateMolecule : MonoBehaviour
                 }
             }
         }
-        // Rotate subgroups off eachother (TODO: could be made to look nicer)
-        foreach (int i in mol.rotate)
-        {
-            float leftToRotate = ++mol.atoms[mol.atoms[(i - 1) * 2].connected * 2].rotateLeft;
-            float rotateHead = (mol.atoms[mol.atoms[(i - 1) * 2].connected * 2].rotateHead);
-            float spin = (leftToRotate) / (rotateHead + 1);
-            mol.selectorArr[i * 2].transform.rotation = roto(-((spin * 3f) - 1f), -((spin * 4f) - 1f), ((spin * 2f) - 1f));
-        }
-
         // Color each atom based off name
+        Vector3 meanVector = Vector3.zero;
+        int total = 0;
         foreach (GameObject i in mol.selectorArr)
         {
             if (i != null && i.name != "dummy" && i.name != "Single Bond" && i.name != "Double Bond" && i.name != "Triple Bond")
             {
+                meanVector += i.transform.position;
+                total++;
                 // Hash name of atom and then use as color values
                 var render = i.GetComponent<Renderer>();
                 byte[] encoded = SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(i.name));
@@ -272,9 +267,19 @@ public class GenerateMolecule : MonoBehaviour
                 float b = value % 100 / 100f;
                 float g = value % 1000000000 / 1000000000f;
                 float r = value % 1000000 / 1000000f;
-                Color autogenColor = new Color(r,g,b, 1f);
+                Color autogenColor = new Color(r, g, b, 1f);
                 render.material.color = autogenColor;
             }
+        }
+        parent.position = (-meanVector / total); // Center Molecule
+
+        // Rotate subgroups off eachother (TODO: could be made to look nicer)
+        foreach (int i in mol.rotate)
+        {
+            float leftToRotate = ++mol.atoms[mol.atoms[(i - 1) * 2].connected * 2].rotateLeft;
+            float rotateHead = (mol.atoms[mol.atoms[(i - 1) * 2].connected * 2].rotateHead);
+            float spin = (leftToRotate) / (rotateHead + 1);
+            mol.selectorArr[i * 2].transform.rotation = roto(-((spin * 3f) - 1f), -((spin * 4f) - 1f), ((spin * 2f) - 1f));
         }
     }
 }
