@@ -384,9 +384,12 @@ MonoBehaviour:
   parent: {fileID: 1449099377}
   sphere: {fileID: 7364276820153522626, guid: ccf7f8733342ccf44b11192f3eee8f8e, type: 3}
   dummy: {fileID: 9071060762828834, guid: 2bf1bfe5600da4243abf5a25bd261db2, type: 3}
-  bond: {fileID: 7833149507352379630, guid: 37b995be4910ebd448298cde1a93ad83, type: 3}
+  SingleBond: {fileID: 7833149507352379630, guid: 37b995be4910ebd448298cde1a93ad83, type: 3}
+  DoubleBond: {fileID: 7833149507352379630, guid: 37b995be4910ebd448298cde1a93ad83, type: 3}
+  TripleBond: {fileID: 7833149507352379630, guid: 37b995be4910ebd448298cde1a93ad83, type: 3}
   opsin: {fileID: 1449099378}
-  molname: '3-hexanone '
+  bonds: 1
+  molname: strontium acetate
 --- !u!4 &1449099377
 Transform:
   m_ObjectHideFlags: 0
