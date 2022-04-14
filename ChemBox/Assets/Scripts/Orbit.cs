@@ -11,9 +11,12 @@ public class Orbit : MonoBehaviour
     float camDistance = 10;
 
     public float MouseSensitivity = 4;
-    public float ScrollSensitivity = 2;
+    public float ScrollSensitivity = 4;
     public float OrbitDampen = 10;
     public float ScrollDampen = 6;
+
+    private float _padScroll;
+
 
     public bool CameraDisabled = true;
     void Start()
@@ -25,7 +28,7 @@ public class Orbit : MonoBehaviour
     // Update is called once per frame
     void LateUpdate() //Called after Update(), so we render after everything else is updated
     {
-        if(Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0))
         {
             CameraDisabled = false;
         }
@@ -46,18 +49,31 @@ public class Orbit : MonoBehaviour
                 //LocalRotation.x = Mathf.Clamp(LocalRotation.x, 0, 90);
             }
         }
-            //Zoom based on scroll wheel
-        if(Input.GetAxis("Mouse ScrollWheel") != 0)
+        //Zoom based on scroll wheel
+        if (Input.GetAxis("Mouse ScrollWheel") != 0)
         {
-                float ScrollAmount = Input.GetAxis("Mouse ScrollWheel") * ScrollSensitivity;
+            float ScrollAmount = Input.GetAxis("Mouse ScrollWheel") * ScrollSensitivity;
 
-                //camera zooms faster when further away from target
-                ScrollAmount *= (camDistance * 0.3f);
+            //camera zooms faster when further away from target
+            ScrollAmount *= (camDistance * 0.3f);
 
-                camDistance += ScrollAmount * -1f;
+            camDistance += ScrollAmount * -1f;
 
-                //constrains camera distance to object
-                camDistance = Mathf.Clamp(camDistance, 1.5f, 100f);
+            //constrains camera distance to object
+            camDistance = Mathf.Clamp(camDistance, 1.5f, 100f);
+        }
+
+        if (_padScroll != 0)
+        {
+            float ScrollAmount = _padScroll * ScrollSensitivity;
+
+            //camera zooms faster when further away from target
+            ScrollAmount *= (camDistance * 0.3f);
+
+            camDistance += ScrollAmount * -1f;
+
+            //constrains camera distance to object
+            camDistance = Mathf.Clamp(camDistance, 1.5f, 100f);
         }
 
         //Actually move camera here
@@ -65,9 +81,19 @@ public class Orbit : MonoBehaviour
 
         ParentTransform.rotation = Quaternion.Lerp(ParentTransform.rotation, qt, Time.deltaTime * OrbitDampen);
 
-        if(CameraTransform.localPosition.z != camDistance * -1)
+        if (CameraTransform.localPosition.z != camDistance * -1)
         {
             CameraTransform.localPosition = new Vector3(0, 0, Mathf.Lerp(CameraTransform.localPosition.z, camDistance * -1, Time.deltaTime * ScrollDampen));
         }
+    }
+
+    //Get TrackPad Scroll
+    //Ripepd from unity answers
+    void OnGUI()
+    {
+        if (Event.current.type == EventType.ScrollWheel)
+            _padScroll = -Event.current.delta.y / 100;
+        else
+            _padScroll = 0;
     }
 }
