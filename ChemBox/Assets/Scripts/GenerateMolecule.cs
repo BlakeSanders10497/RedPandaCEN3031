@@ -10,6 +10,7 @@ struct atom
     public int connected;
     public int rotateHead;
     public int rotateLeft;
+    public UnityEngine.Quaternion finalQuant;
 }
 
 struct molecule
@@ -43,6 +44,7 @@ public class GenerateMolecule : MonoBehaviour
     public bool bonds;
     private molecule mol;
     public string molname;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -62,11 +64,22 @@ public class GenerateMolecule : MonoBehaviour
             SpawnObject(mol);
         }
     }
+    private float timeCount = 0.0f;
+    private Vector3 startVect;
+    private Vector3 endVect;
+    private float startTime;
 
     // Update is called once per frame
     void Update()
     {
-
+        float fracComplete = (Time.time - startTime) / 0.45f;
+        parent.position = Vector3.Slerp(startVect, endVect, fracComplete);
+        // Rotate subgroups off each other animation
+        foreach (int i in mol.rotate)
+        {
+            mol.selectorArr[i * 2].transform.rotation = Quaternion.Slerp(mol.selectorArr[i * 2].transform.rotation, mol.atoms[i * 2].finalQuant, timeCount * 0.04f);
+            timeCount = timeCount + Time.deltaTime;
+        }
     }
 
     // Ripped from stack overflow
@@ -271,15 +284,20 @@ public class GenerateMolecule : MonoBehaviour
                 render.material.color = autogenColor;
             }
         }
-        parent.position = (-meanVector / total); // Center Molecule
+        startVect = parent.position;
+        endVect = (-meanVector / total); // Center Molecule
 
-        // Rotate subgroups off eachother (TODO: could be made to look nicer)
+        // Rotate subgroups off each other calculation
         foreach (int i in mol.rotate)
         {
             float leftToRotate = ++mol.atoms[mol.atoms[(i - 1) * 2].connected * 2].rotateLeft;
             float rotateHead = (mol.atoms[mol.atoms[(i - 1) * 2].connected * 2].rotateHead);
             float spin = (leftToRotate) / (rotateHead + 1);
-            mol.selectorArr[i * 2].transform.rotation = roto(-((spin * 3f) - 1f), -((spin * 4f) - 1f), ((spin * 2f) - 1f));
+            //UnityEngine.Quaternion tmpQuaternion = mol.selectorArr[i * 2].transform.rotation;
+            //mol.selectorArr[i * 2].transform.rotation = roto(-((spin * 3f) - 1f), -((spin * 4f) - 1f), ((spin * 2f) - 1f));
+            //transform.rotation = Quaternion.FromToRotation(tmpQuaternion, transform.forward);
+            mol.atoms[i * 2].finalQuant = roto(-((spin * 3f) - 1f), -((spin * 4f) - 1f), ((spin * 2f) - 1f));
         }
+        startTime = Time.time;
     }
 }
