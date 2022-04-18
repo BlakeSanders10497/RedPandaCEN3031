@@ -94,6 +94,7 @@ public class GenerateMolecule : MonoBehaviour
 
     void SpawnObject(molecule mol)
     {
+        LabelManager.instance.SetText(mol.name);
 
         Debug.Log(mol.smiles);
         mol.size = 0;
