@@ -26,3 +26,10 @@ Drag around with a mouse click. Scroll to zoom in and out. Hover over an item to
 ## Contributing
 
 You can report issues [here](https://github.com/BlakeSanders10497/RedPandaCEN3031/issues). Make sure to include your Unity Version. 
+
+
+## Screenshots
+
+![s1](https://github.com/BlakeSanders10497/RedPandaCEN3031/blob/main/images/s1.png)
+
+![s2](https://github.com/BlakeSanders10497/RedPandaCEN3031/blob/main/images/s2.png)
