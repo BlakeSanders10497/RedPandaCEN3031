@@ -20,7 +20,7 @@ struct molecule
     public GameObject[] selectorArr;
     public atom[] atoms;
     public List<int> rotate;
-    public int size; // unused
+    public int size;
 }
 
 struct DFSstep
@@ -92,7 +92,6 @@ public class GenerateMolecule : MonoBehaviour
     {
         UnityEngine.Quaternion newQuaternion = new UnityEngine.Quaternion();
         newQuaternion.Set(x, y, z, 1);
-        //Return the new Quaternion
         return newQuaternion;
     }
 
@@ -298,9 +297,6 @@ public class GenerateMolecule : MonoBehaviour
             float leftToRotate = ++mol.atoms[mol.atoms[(i - 1) * 2].connected * 2].rotateLeft;
             float rotateHead = (mol.atoms[mol.atoms[(i - 1) * 2].connected * 2].rotateHead);
             float spin = (leftToRotate) / (rotateHead + 1);
-            //UnityEngine.Quaternion tmpQuaternion = mol.selectorArr[i * 2].transform.rotation;
-            //mol.selectorArr[i * 2].transform.rotation = roto(-((spin * 3f) - 1f), -((spin * 4f) - 1f), ((spin * 2f) - 1f));
-            //transform.rotation = Quaternion.FromToRotation(tmpQuaternion, transform.forward);
             mol.atoms[i * 2].finalQuant = roto(-((spin * 3f) - 1f), -((spin * 4f) - 1f), ((spin * 2f) - 1f));
         }
         startTime = Time.time;

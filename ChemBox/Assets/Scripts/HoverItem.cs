@@ -6,14 +6,7 @@ public class HoverItem : MonoBehaviour
 {
     Renderer m_Renderer;
     private Color original;
-
-
-
-
     private string currentToolTipText = "";
-
-
-
     private GUIStyle guiStyleFore;
     private GUIStyle guiStyleBack;
 
@@ -46,19 +39,6 @@ public class HoverItem : MonoBehaviour
         m_Renderer.material.color = original;
         currentToolTipText = "";
     }
-
-    // Update is called once per frame
-    //void Update()
-    //{
-
-    //}
-
-    /*
-    function OnMouseEnter()
-    {
-
-        currentToolTipText = text;
-    }*/
 
     void OnGUI()
     {

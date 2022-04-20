@@ -14,9 +14,6 @@ public class OpsinInteract : MonoBehaviour
         //Debug.Log(nts.parseToSmiles("acetonitrile")); // C(C)#N
         //Debug.Log(nts.parseToSmiles("2,4,6-trinitrotoluene")); // [N+](=O)([O-])C1=C(C)C(=CC(=C1)[N+](=O)[O-])[N+](=O)[O-]
         //Debug.Log(nts.parseToSmiles("1-Hexanoyl-4-carbazolecarbaldehyde")); // C(CCCCC)(=O)C1=CC=C(C=2C3=CC=CC=C3NC12)C=O
-        /*Debug.Log(nts.parseToCML("acetonitrile"));
-        var result = nts.parseChemicalName("acetonitrile");
-        Debug.Log(result.getExtendedSmiles());*/        
     }
 
     // Update is called once per frame
