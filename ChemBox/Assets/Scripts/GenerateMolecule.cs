@@ -50,6 +50,10 @@ public class GenerateMolecule : MonoBehaviour
     {
         mol = new molecule();
         mol.rotate = new List<int>();
+        if(StaticClass.CrossSceneInformation != null)
+        {
+            molname = StaticClass.CrossSceneInformation;
+        }
         mol.name = molname;
         mol.smiles = opsin.ptoSmile(mol.name);
         //mol.smiles = "C";

@@ -5,8 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class SceneChange : MonoBehaviour
 {
-  public void LoadScene(string name)
+    public void SetMol(string mol)
     {
-        SceneManager.LoadScene(name);
+        StaticClass.CrossSceneInformation = mol;
+    }
+    public void LoadScene(string sname)
+    {
+        SceneManager.LoadScene(sname);
     }
 }
