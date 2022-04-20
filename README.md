@@ -1,7 +1,7 @@
 
 # Chem Box
 
-Chem Box is an open source chemical molecule viewer built off the game engine Unity.
+Chem Box is an open source molecular visualizer tool built using the Unity game engine.
 
 
 ## Download
@@ -20,7 +20,7 @@ Download it for Windows
 
 ## Controls
 
-Drag around with a mouse click. Scroll to zoom in and out. Hover over an item to view it's name. Toggle the labels on or off in the top right corner. 
+Drag around with a mouse click. Scroll to zoom in and out. Hover over an item to view its name. Toggle the labels on or off in the top right corner. 
 
 
 ## Contributing
