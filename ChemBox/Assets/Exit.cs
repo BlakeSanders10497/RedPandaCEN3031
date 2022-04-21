@@ -5,11 +5,15 @@ using System.Collections;
 
 public class Exit : MonoBehaviour
 {
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
     void Update()
     {
         if (Input.GetKey("escape"))
         {
-            Application.Quit();
+            QuitGame();
         }
     }
 }
